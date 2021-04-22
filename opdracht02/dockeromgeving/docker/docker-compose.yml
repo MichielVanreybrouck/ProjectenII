@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  drupal:
+    image: drupal:latest
+    ports:
+      - 80:80
+    restart: always
+
+  mariadb:
+    image: mariadb:latest
+    restart: always
+    environment:
+      MYSQL_DATABASE: drupal
+      MYSQL_USER: drupal
+      MYSQL_PASSWORD: drupal
+      MYSQL_ROOT_PASSWORD: root

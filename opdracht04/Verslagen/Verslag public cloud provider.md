@@ -1,0 +1,10 @@
+# Verslag opzetten Windows webserver en clients op public cloud provider.
+1. Als eerste zullen we de powershell Azure module installeren op onze lokale computer. Open powershell met adminrechten en voor het commando:  `Install-Module -Name Az -AllowClobber `
+Indien er gevraagd wordt om dit untrusted repository te vertrouwen ga je voor optie ` y ` of ` a ` voor 'Yes to all'.
+2. Je zal je inloggegevens voor Azure moeten instellen. Doe dit door het commando `Connect-AzAccount` uit te voeren. Er opent zich een venster waar je je inloggegevens kan invullen. 
+3. Vervolgens willen we een user object creëren. Deze logingegevens kunnen later gebruikt worden om in te loggen op de VM.
+    * Creëer een variabele waarin het wachtwoord zullen opslaan als een secure string vertrekkende van plain tekst:  ` $password = ConvertTo-SecureString "mijnWachtwoord" -AsPlainText -Force`. Houd er rekening mee dat het wachtwoord complex genoeg moet zijn. 
+    * Vervolgens creëren we een variabele waarin we ons user object zullen opslaan: ` $credential = New-Object System.Management.Automation.PSCredential ("mijnGebruikersnaam", $password) `.
+4. Een virtuele machine in Azure moet altijd tot een 'resource group' behoren. Zoals de naam reeds doet vermoeden is dit een logische verzameling van resources zoals virtuele machines, opslagaccounts, virtuele netwerken, web applicaties, ... Je kan zelf een naam kiezen, maar voor de locatie kies je West-Europa: ` New-AzResourceGroup -Name "mijnResourceGroup" -Location "westeurope" `.
+5. Vervolgens creëren we de virtuele machine: ` New-AzVM -ResourceGroupName "mijnResourceGroup" -Name "myVM" -Location "westeurope" -VirtualNetworkname "myVNet" -SubnetName "myIISSubnet" -SecurityGroupName "mySecuGroup" -AddressPrefix 192.168.0.0/16 -PublicIpAddressName "myPublicIpAddressName" -OpenPorts 80,3389 -Credential $credential -ImageName "MicrosoftSQLServer:SQL2016SP1-WS2016:Enterprise:latest" `.
+6. Installeer de SQL Server extensie voor Azure: ` Set-AzVMSqlServerExtension -ResourceGroupName "mijnResourceGroup" -VMName "myVM" -Name "SQLExtension" -Location "westeurope" ` .
